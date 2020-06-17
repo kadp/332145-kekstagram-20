@@ -1,7 +1,7 @@
 'use strict';
 var MIN_LIKES = 15;
 var MAX_LIKES = 200;
-var COMMENTS_RANGE = 33;
+var COMMENTS_RANGE = 99;
 var PICTURES_LIST_RANGE = 25;
 var AVATAR_RANGE = 6;
 var AVATAR_NAMES = ['Леонардо', 'Рафаэль', 'Донателло', 'Микеланджело', 'Сплинтер', 'Эйприл О’Нил'];
@@ -32,14 +32,18 @@ var getMessages = function () {
   return message;
 };
 
+var getComment = function () {
+  return {
+    avatar: 'img/avatar-' + getRandomNumber(1, AVATAR_RANGE) + '.svg',
+    message: getMessages(),
+    name: AVATAR_NAMES[getRandomNumber(0, AVATAR_NAMES.length - 1)],
+  };
+};
+
 var getComments = function () {
   var comments = [];
   for (var i = 0; i < getRandomNumber(0, COMMENTS_RANGE); i++) {
-    var commentsInfo = {};
-    commentsInfo.avatar = 'img/avatar-' + getRandomNumber(1, AVATAR_RANGE) + '.svg';
-    commentsInfo.message = getMessages();
-    commentsInfo.name = AVATAR_NAMES[getRandomNumber(0, AVATAR_NAMES.length - 1)];
-    comments.push(commentsInfo);
+    comments.push(getComment());
   }
   return comments;
 };
@@ -60,11 +64,11 @@ var getPicturesList = function () {
 };
 
 var getPictureClone = function (n) {
-  var clonedElement = pictureTemplate.cloneNode(true);
-  clonedElement.querySelector('img').src = picturesList[n].url;
-  clonedElement.querySelector('.picture__likes').textContent = picturesList[n].likes;
-  clonedElement.querySelector('.picture__comments').textContent = picturesList[n].comments.length;
-  return clonedElement;
+  var clonedPicture = pictureTemplate.cloneNode(true);
+  clonedPicture.querySelector('img').src = picturesList[n].url;
+  clonedPicture.querySelector('.picture__likes').textContent = picturesList[n].likes;
+  clonedPicture.querySelector('.picture__comments').textContent = picturesList[n].comments.length;
+  return clonedPicture;
 };
 
 var getFullDomOfPicture = function () {
