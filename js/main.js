@@ -106,37 +106,15 @@ var hashtagRe = /^#[a-zа-яA-ZА-Я0-9]*$/gm;
 
 var hashtagsInput = document.querySelector('.text__hashtags');
 var uploadSubmitButton = document.querySelector('#upload-submit');
-
+/*
 hashtagsInput.addEventListener('invalid', function () {
   if (hashtagsInput.validity.tooShort) {
     hashtagsInput.setCustomValidity('ХэшТег должен состоять минимум из 2-х символов');
   } else if (hashtagsInput.validity.tooLong) {
-    hashtagsInput.setCustomValidity('ХэшТег не должен превышать 20-ти символов, включая #');
+    hashtagsInput.setCustomValidity('Допустимо ' + MAX_HASHTAGE_AMOUNT + ' ХешТэгов, длинной по ' + MAX_HASHTAGE_LENGTH + ' символов каждый, включая #');
   } else {
     hashtagsInput.setCustomValidity('');
   }
-});
-
-// код данной функции можно просто добавить как еще одна веттка else if на 'invalid'?
-var validateHashtags = function () {
-  var hashtagsArray = hashtagsInput.value.split(' ', 5);
-  if (hashtagsArray.length > MAX_HASHTAGE_AMOUNT) {
-    hashtagsInput.setCustomValidity('ХешТэгов не может быть больше ' + MAX_HASHTAGE_AMOUNT);
-  } else {
-    for (var i = 0; i < hashtagsArray.length; i++) {
-      hashtagRe.exec(hashtagsArray[i]);
-    }
-  }
-};
-
-uploadSubmitButton.addEventListener('click', function (evt) {
-  evt.preventDefault();
-  if (validateHashtags()) {
-    console.log('ok');
-  } else {
-    console.log('bad');
-  }
-
 });
 
 hashtagsInput.addEventListener('input', function () {
@@ -151,6 +129,48 @@ hashtagsInput.addEventListener('input', function () {
   }
 
 });
+
+// код данной функции можно просто добавить как еще одна веттка else if на 'invalid'?
+var validateHashtags = function () {
+  var hashtagsArray = hashtagsInput.value.split(' ', 5);
+  if (hashtagsArray.length > MAX_HASHTAGE_AMOUNT) {
+    hashtagsInput.setCustomValidity('ХешТэгов не может быть больше ' + MAX_HASHTAGE_AMOUNT);
+  } else {
+    for (var i = 0; i < hashtagsArray.length; i++) {
+      hashtagRe.exec(hashtagsArray[i]);
+    }
+  }
+};
+*/
+
+hashtagsInput.addEventListener('input', function () {
+  var hashtagsList = hashtagsInput.value.split(' ', 5);
+
+  if (hashtagsList.length <= MAX_HASHTAGE_AMOUNT) {
+    for (var i = 0; i < hashtagsList.length; i++) {
+      if (hashtagsList[i] < MIN_HASHTAG_LENGTH) {
+        hashtagsInput.setCustomValidity('Ещё ' + (MIN_HASHTAG_LENGTH - hashtagsList[i].length) + ' симв.');
+      } else if (hashtagsList[i].length > MAX_HASHTAGE_LENGTH) {
+        hashtagsInput.setCustomValidity('Удалите лишние ' + (hashtagsList[i].length - MIN_HASHTAG_LENGTH) + ' симв.');
+      } else {
+        hashtagsInput.setCustomValidity('');
+      }
+      hashtagRe.exec(hashtagsList[i]);
+    }
+  } else {
+    hashtagsInput.setCustomValidity('ХешТэгов не может быть больше ' + MAX_HASHTAGE_AMOUNT + '-ти штук!');
+  }
+});
+
+uploadSubmitButton.addEventListener('click', function (evt) {
+  evt.preventDefault();
+  /*if (validateHashtags()) {
+    console.log('ok');
+  } else {
+    console.log('bad');
+  }*/
+});
+
 
 effectsList.addEventListener('click', function () {
   for (var i = 0; i < effectsListType.length; i++) {
