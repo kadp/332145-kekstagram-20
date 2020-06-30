@@ -92,122 +92,94 @@ var effectLevel = document.querySelector('.effect-level__value');
 var effectLevelLine = document.querySelector('.effect-level__depth');
 var scaleControlSmaller = document.querySelector('.scale__control--smaller');
 var scaleControlBigger = document.querySelector('.scale__control--bigger');
-var scaleControlValue = document.querySelector('.scale__control--value');
+var scaleControl = document.querySelector('.scale__control--value');
 var fieldsetDeepEffect = document.querySelector('.img-upload__effect-level');
 
 var imgUploadPreview = document.querySelector('.img-upload__preview');
 var effectsList = document.querySelector('.effects__list');
 var effectsListType = document.querySelectorAll('input[type="radio"]');
 
-var MIN_HASHTAG_LENGTH = 2;
 var MAX_HASHTAGE_LENGTH = 20;
 var MAX_HASHTAGE_AMOUNT = 5;
-var hashtagRe = /^#[a-zа-яA-ZА-Я0-9]*$/gm;
+
+var MAX_SIZE_PICTURE = 100;
+var MIN_SIZE_PICTURE = 25;
 
 var hashtagsInput = document.querySelector('.text__hashtags');
-var uploadSubmitButton = document.querySelector('#upload-submit');
-/*
-hashtagsInput.addEventListener('invalid', function () {
-  if (hashtagsInput.validity.tooShort) {
-    hashtagsInput.setCustomValidity('ХэшТег должен состоять минимум из 2-х символов');
-  } else if (hashtagsInput.validity.tooLong) {
-    hashtagsInput.setCustomValidity('Допустимо ' + MAX_HASHTAGE_AMOUNT + ' ХешТэгов, длинной по ' + MAX_HASHTAGE_LENGTH + ' символов каждый, включая #');
-  } else {
-    hashtagsInput.setCustomValidity('');
-  }
-});
 
-hashtagsInput.addEventListener('input', function () {
-  var valueLength = hashtagsInput.value.length;
+var hashtagRe = /^#[a-zа-я0-9]/gm;
 
-  if (valueLength < MIN_HASHTAG_LENGTH) {
-    hashtagsInput.setCustomValidity('Ещё ' + (MIN_HASHTAG_LENGTH - valueLength) + ' симв.');
-  } else if (valueLength > MAX_HASHTAGE_LENGTH) {
-    hashtagsInput.setCustomValidity('Удалите лишние ' + (valueLength - MIN_HASHTAG_LENGTH) + ' симв.');
-  } else {
-    hashtagsInput.setCustomValidity('');
-  }
-
-});
-
-// код данной функции можно просто добавить как еще одна веттка else if на 'invalid'?
-var validateHashtags = function () {
-  var hashtagsArray = hashtagsInput.value.split(' ', 5);
-  if (hashtagsArray.length > MAX_HASHTAGE_AMOUNT) {
-    hashtagsInput.setCustomValidity('ХешТэгов не может быть больше ' + MAX_HASHTAGE_AMOUNT);
-  } else {
-    for (var i = 0; i < hashtagsArray.length; i++) {
-      hashtagRe.exec(hashtagsArray[i]);
-    }
-  }
-};
-*/
-
-hashtagsInput.addEventListener('input', function () {
-  var hashtagsList = hashtagsInput.value.split(' ', 5);
-
+var validatedHashTags = function (value) {
+  var hashtagsList = value.trim().toLowerCase().split(/\s+/);
   if (hashtagsList.length <= MAX_HASHTAGE_AMOUNT) {
     for (var i = 0; i < hashtagsList.length; i++) {
-      if (hashtagsList[i] < MIN_HASHTAG_LENGTH) {
-        hashtagsInput.setCustomValidity('Ещё ' + (MIN_HASHTAG_LENGTH - hashtagsList[i].length) + ' симв.');
-      } else if (hashtagsList[i].length > MAX_HASHTAGE_LENGTH) {
-        hashtagsInput.setCustomValidity('Удалите лишние ' + (hashtagsList[i].length - MIN_HASHTAG_LENGTH) + ' симв.');
-      } else {
-        hashtagsInput.setCustomValidity('');
+      if (hashtagsList[i][0] !== '#') {
+        return 'ХешТег должен начинаться с решётки - "#"';
       }
-      hashtagRe.exec(hashtagsList[i]);
+      if (!hashtagsList[i].length === 1) {
+        return 'ХешТег не должен содержать всебе только решётку - "#"';
+      }
+      if (hashtagsList[i].length > MAX_HASHTAGE_LENGTH) {
+        return 'Длина ХешТега не может быть больше ' + MAX_HASHTAGE_LENGTH + ' символов! Удалите лишние ' + (hashtagsList[i].length - MAX_HASHTAGE_LENGTH) + ' симв.';
+      }
+      if (hashtagRe.test(hashtagsList[i])) {
+        return 'Используются недопустимые символы, строка после решётки "#" должна состоять из букв и чисел';
+      }
     }
   } else {
-    hashtagsInput.setCustomValidity('ХешТэгов не может быть больше ' + MAX_HASHTAGE_AMOUNT + '-ти штук!');
+    return 'Можно использовать не больше ' + MAX_HASHTAGE_AMOUNT + ' #!';
   }
-});
+  return '';
+};
 
-uploadSubmitButton.addEventListener('click', function (evt) {
-  evt.preventDefault();
-  /*if (validateHashtags()) {
-    console.log('ok');
-  } else {
-    console.log('bad');
-  }*/
+hashtagsInput.addEventListener('input', function (evt) {
+  hashtagsInput.setCustomValidity(validatedHashTags(evt.target.value));
 });
-
 
 effectsList.addEventListener('click', function () {
   for (var i = 0; i < effectsListType.length; i++) {
     if (effectsListType[i].checked) {
-      fieldsetDeepEffect.classList.remove('hidden');
-      switch (effectsListType[i].value) {
-        case 'none':
-          fieldsetDeepEffect.classList.add('hidden');
-          imgUploadPreview.style.filter = 'none';
-          break;
-        case 'chrome':
-          imgUploadPreview.style.filter = 'grayscale(' + effectLevel.value + '%)';
-          setSliderDefaultPosition();
-          break;
-        case 'sepia':
-          imgUploadPreview.style.filter = 'sepia(100%)';
-          setSliderDefaultPosition();
-          break;
-        case 'marvin':
-          imgUploadPreview.style.filter = 'invert(' + effectLevel.value + '%)';
-          setSliderDefaultPosition();
-          break;
-        case 'phobos':
-          imgUploadPreview.style.filter = 'blur(10px)';
-          setSliderDefaultPosition();
-          break;
-        case 'heat':
-          imgUploadPreview.style.filter = 'brightness(' + effectLevel.value / 100 + ')';
-          setSliderDefaultPosition();
-          break;
-
-        default:
-          break;
-      }
+      setVisibleEffectLine(effectsListType[i].value);
+      setSliderDefaultPosition();
+      setFilterStyle(effectsListType[i].value);
     }
   }
 });
+
+var setVisibleEffectLine = function (filterType) {
+  if (filterType === 'none') {
+    fieldsetDeepEffect.classList.add('hidden');
+  } else {
+    fieldsetDeepEffect.classList.remove('hidden');
+    setSliderDefaultPosition();
+  }
+};
+
+var setFilterStyle = function (filterType) {
+  switch (filterType) {
+    case 'none':
+      imgUploadPreview.style.filter = 'none';
+      break;
+    case 'chrome':
+      imgUploadPreview.style.filter = 'grayscale(' + effectLevel.value / 100 + ')';
+      break;
+    case 'sepia':
+      imgUploadPreview.style.filter = 'sepia(' + effectLevel.value / 100 + ')';
+      break;
+    case 'marvin':
+      imgUploadPreview.style.filter = 'invert(' + effectLevel.value + '%)';
+      break;
+    case 'phobos':
+      imgUploadPreview.style.filter = 'blur(' + (effectLevel.value / 100) * 3 + 'px)';
+      break;
+    case 'heat':
+      imgUploadPreview.style.filter = 'brightness(' + (effectLevel.value / 100) * 3 + ')';
+      break;
+
+    default:
+      break;
+  }
+};
 
 uploadForm.addEventListener('change', function () {
   if (uploadForm.value) {
@@ -216,21 +188,35 @@ uploadForm.addEventListener('change', function () {
 });
 
 scaleControlSmaller.addEventListener('click', function () {
-  if (parseInt(scaleControlValue.value, 10) > 25) {
-    scaleControlValue.value = parseInt(scaleControlValue.value, 10) - 25 + '%';
-    imgUploadPreview.style.transform = 'scale(' + parseInt(scaleControlValue.value, 10) / 100 + ')';
+  if (parseInt(scaleControl.value, 10) > MIN_SIZE_PICTURE) {
+    getResizePicture();
   }
 });
 
-scaleControlBigger.addEventListener('click', function () {
-  if (parseInt(scaleControlValue.value, 10) < 100) {
-    scaleControlValue.value = parseInt(scaleControlValue.value, 10) + 25 + '%';
-    imgUploadPreview.style.transform = 'scale(' + parseInt(scaleControlValue.value, 10) / 100 + ')';
+scaleControlBigger.addEventListener('click', function (sign) {
+  if (parseInt(scaleControl.value, 10) < MAX_SIZE_PICTURE) {
+    getResizePicture(sign);
   }
 });
+
+
+var getResizePicture = function (sign) {
+  if (sign) {
+    scaleControl.value = parseInt(scaleControl.value, 10) + 25 + '%';
+    setSizeValue(scaleControl.value);
+  } else {
+    scaleControl.value = parseInt(scaleControl.value, 10) - 25 + '%';
+    setSizeValue(scaleControl.value);
+  }
+};
+
+var setSizeValue = function (sizeValue) {
+  imgUploadPreview.style.transform = 'scale(' + parseInt(sizeValue, 10) / 100 + ')';
+  return;
+};
 
 var setSliderDefaultPosition = function () {
-  effectLevel.value = parseInt(effectLevel.value, 10);
+  effectLevel.value = 100;
   sliderDeepEffect.style.left = effectLevel.value + '%';
   effectLevelLine.style.width = effectLevel.value + '%';
 };
