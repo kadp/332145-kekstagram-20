@@ -81,7 +81,8 @@ var renderPicturesList = function () {
 getPicturesList();
 renderPicturesList();
 
-//Временный комментарий - разделение кода 4-го модуля.
+/* разделение кода 4-го модуля. */
+
 var MAX_HASHTAGE_LENGTH = 20;
 var MAX_HASHTAGE_AMOUNT = 5;
 var MAX_SIZE_PICTURE = 100;
