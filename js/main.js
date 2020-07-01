@@ -82,6 +82,10 @@ getPicturesList();
 renderPicturesList();
 
 //Временный комментарий - разделение кода 4-го модуля.
+var MAX_HASHTAGE_LENGTH = 20;
+var MAX_HASHTAGE_AMOUNT = 5;
+var MAX_SIZE_PICTURE = 100;
+var MIN_SIZE_PICTURE = 25;
 
 var uploadForm = document.querySelector('#upload-file');
 var body = document.querySelector('body');
@@ -99,15 +103,8 @@ var imgUploadPreview = document.querySelector('.img-upload__preview');
 var effectsList = document.querySelector('.effects__list');
 var effectsListType = document.querySelectorAll('input[type="radio"]');
 
-var MAX_HASHTAGE_LENGTH = 20;
-var MAX_HASHTAGE_AMOUNT = 5;
-
-var MAX_SIZE_PICTURE = 100;
-var MIN_SIZE_PICTURE = 25;
-
 var hashtagsInput = document.querySelector('.text__hashtags');
-
-var hashtagRe = /^#[a-zа-я0-9]/gm;
+var hashtagRe = /^#[a-zа-я0-9]{1,20}$/;
 
 var validatedHashTags = function (value) {
   var hashtagsList = value.trim().toLowerCase().split(/\s+/);
@@ -122,7 +119,7 @@ var validatedHashTags = function (value) {
       if (hashtagsList[i].length > MAX_HASHTAGE_LENGTH) {
         return 'Длина ХешТега не может быть больше ' + MAX_HASHTAGE_LENGTH + ' символов! Удалите лишние ' + (hashtagsList[i].length - MAX_HASHTAGE_LENGTH) + ' симв.';
       }
-      if (hashtagRe.test(hashtagsList[i])) {
+      if (!hashtagRe.test(hashtagsList[i])) {
         return 'Используются недопустимые символы, строка после решётки "#" должна состоять из букв и чисел';
       }
     }
@@ -199,20 +196,17 @@ scaleControlBigger.addEventListener('click', function (sign) {
   }
 });
 
-
 var getResizePicture = function (sign) {
   if (sign) {
     scaleControl.value = parseInt(scaleControl.value, 10) + 25 + '%';
-    setSizeValue(scaleControl.value);
   } else {
     scaleControl.value = parseInt(scaleControl.value, 10) - 25 + '%';
-    setSizeValue(scaleControl.value);
   }
+  setSizeValue(scaleControl.value);
 };
 
 var setSizeValue = function (sizeValue) {
   imgUploadPreview.style.transform = 'scale(' + parseInt(sizeValue, 10) / 100 + ')';
-  return;
 };
 
 var setSliderDefaultPosition = function () {
@@ -236,8 +230,12 @@ buttonUploadCancel.addEventListener('click', function () {
 
 var onUploadFormEscPress = function (evt) {
   if (evt.key === 'Escape') {
-    evt.preventDefault();
-    closeUploadForm();
+    if (hashtagsInput === document.activeElement) {
+      evt.preventDefault();
+    } else {
+      evt.preventDefault();
+      closeUploadForm();
+    }
   }
 };
 
