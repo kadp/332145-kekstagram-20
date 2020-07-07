@@ -51,7 +51,7 @@ var getComments = function () {
 var getPictureInfo = function (i) {
   return {
     url: 'photos/' + i + '.jpg',
-    description: '',
+    description: 'Test, later will be delete',
     likes: getRandomNumber(MIN_LIKES, MAX_LIKES),
     comments: getComments()
   };
@@ -80,6 +80,55 @@ var renderPicturesList = function () {
 
 getPicturesList();
 renderPicturesList();
+/* Модуль 3 часть 3 */
+var body = document.querySelector('body');
+var bigPicture = document.querySelector('.big-picture');
+var likesCount = document.querySelector('.likes-count');
+var socialСommentСount = document.querySelector('.social__comment-count');
+var commentsCount = document.querySelector('.comments-count');
+var socialCaption = document.querySelector('.social__caption');
+var commentsLoader = document.querySelector('.comments-loader');
+var socialComments = document.querySelector('.social__comments');
+var socialPicture = socialComments.querySelector('.social__picture');
+var socialText = socialComments.querySelector('.social__text');
+
+var toggleHiden = function (elem) {
+  if (elem.classList.contains('hidden')) {
+    elem.classList.remove('hidden');
+  } else {
+    elem.classList.add('hidden');
+  }
+};
+
+var getSocialComment = function (i) {
+  socialPicture.src = picturesList[0].comments[i].avatar;
+  socialPicture.alt = picturesList[0].comments[i].name;
+  socialText.textContent = picturesList[0].comments[i].message;
+};
+
+var renderSocialComments = function () {
+  for (var i = 0; i < picturesList[0].comments.length; i++) {
+    socialComments.appendChild(getSocialComment(i));
+  }
+};
+
+var setBigPictureData = function () {
+  bigPicture.querySelector('img').src = picturesList[0].url;
+  likesCount.textContent = picturesList[0].likes;
+  commentsCount.textContent = picturesList[0].comments.length;
+  socialCaption.textContent = picturesList[0].description;
+};
+
+var showBigPicture = function () {
+  toggleHiden(bigPicture);
+  body.classList.add('modal-open');
+  setBigPictureData(bigPicture);
+  toggleHiden(socialСommentСount);
+  toggleHiden(commentsLoader);
+  renderSocialComments();
+};
+
+showBigPicture();
 
 /* разделение кода 4-го модуля. */
 
@@ -89,7 +138,6 @@ var MAX_SIZE_PICTURE = 100;
 var MIN_SIZE_PICTURE = 25;
 
 var uploadForm = document.querySelector('#upload-file');
-var body = document.querySelector('body');
 var formEditPicture = document.querySelector('.img-upload__overlay');
 var buttonUploadCancel = document.querySelector('#upload-cancel');
 var sliderDeepEffect = document.querySelector('.effect-level__pin');
