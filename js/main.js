@@ -92,17 +92,22 @@ var socialCaption = document.querySelector('.social__caption');
 var commentsLoader = document.querySelector('.comments-loader');
 var socialCommentsList = document.querySelector('.social__comments');
 var socialComment = document.querySelector('.social__comment');
-var firstPicture = document.querySelector('.picture__img');
+var listPictures = document.querySelectorAll('.picture');
+var bigPictureClose = document.querySelector('#picture-cancel');
 
 var toggleHiden = function (elem) {
   elem.classList.toggle('hidden');
 };
 
-var renderComment = function (i) {
+var toggleModal = function (elem) {
+  elem.classList.toggle('modal-open');
+};
+
+var renderComment = function (j, i) {
   var newComment = socialComment.cloneNode(true);
-  newComment.querySelector('.social__picture').src = picturesList[0].comments[i].avatar;
-  newComment.querySelector('.social__picture').alt = picturesList[0].comments[i].name;
-  newComment.querySelector('.social__text').textContent = picturesList[0].comments[i].message;
+  newComment.querySelector('.social__picture').src = picturesList[i].comments[j].avatar;
+  newComment.querySelector('.social__picture').alt = picturesList[i].comments[j].name;
+  newComment.querySelector('.social__text').textContent = picturesList[i].comments[j].message;
   return newComment;
 };
 
@@ -112,32 +117,58 @@ var removeOldComments = function () {
   }
 };
 
-var renderSocialComments = function () {
+var renderComments = function (i) {
   removeOldComments();
-  for (var i = 0; i < picturesList[0].comments.length; i++) {
-    socialCommentsList.appendChild(renderComment(i));
+  for (var j = 0; j < picturesList[i].comments.length; j++) {
+    socialCommentsList.appendChild(renderComment(j, i));
   }
 };
 
-var setBigPictureData = function () {
-  bigPicture.querySelector('img').src = picturesList[0].url;
-  likesCount.textContent = picturesList[0].likes;
-  commentsCount.textContent = picturesList[0].comments.length;
-  socialCaption.textContent = picturesList[0].description;
+var setBigPictureData = function (i) {
+  bigPicture.querySelector('img').src = picturesList[i].url;
+  likesCount.textContent = picturesList[i].likes;
+  commentsCount.textContent = picturesList[i].comments.length;
+  socialCaption.textContent = picturesList[i].description;
+  showBigPicture(i);
 };
 
-var showBigPicture = function () {
+var showBigPicture = function (i) {
   toggleHiden(bigPicture);
-  body.classList.add('modal-open');
-  setBigPictureData(bigPicture);
-  toggleHiden(socialСommentСount);
-  toggleHiden(commentsLoader);
-  renderSocialComments();
+  toggleModal(body);
+  socialСommentСount.classList.add('hidden'); /* если использовать toggle по аналогии с bigPicture, то в четных картинках он переключается сам и отрисовывает скрытые поля*/
+  commentsLoader.classList.add('hidden');
+  renderComments(i);
+  document.addEventListener('keydown', onShowBigPictureEscPress);
 };
 
-firstPicture.addEventListener('click', function () {
-  showBigPicture();
+var setClicklistPictures = function () {
+  for (var i = 0; i < listPictures.length; i++) {
+    (function (j) {
+      listPictures[j].onclick = function () {
+        setBigPictureData(j);
+      };
+    })(i);
+  }
+};
+
+bigPictureClose.addEventListener('click', function () {
+  closeBigPicture();
 });
+
+var closeBigPicture = function () {
+  toggleHiden(bigPicture);
+  toggleModal(body);
+  document.removeEventListener('keydown', onShowBigPictureEscPress);
+};
+
+var onShowBigPictureEscPress = function (evt) {
+  evt.preventDefault();
+  if (evt.key === ESCAPE) {
+    closeBigPicture();
+  }
+};
+
+setClicklistPictures();
 
 /* разделение кода 4-го модуля. */
 
@@ -150,6 +181,7 @@ var DEFAULT_SLIDER_VALUE = 100;
 var BLUR_VALUE = 3;
 var BRIGHTNESS_VALUE = 3;
 var ESCAPE = 'Escape';
+var MAX_COMMENT_LENGTH = 140;
 
 var uploadForm = document.querySelector('#upload-file');
 var formEditPicture = document.querySelector('.img-upload__overlay');
@@ -168,6 +200,20 @@ var effectsListType = document.querySelectorAll('input[type="radio"]');
 
 var hashtagsInput = document.querySelector('.text__hashtags');
 var hashtagRe = /^#[a-zа-я0-9]{1,20}$/;
+
+var uploadTextDescription = document.querySelector('.text__description');
+
+
+var validatedComment = function (value) {
+  if (value.length > MAX_COMMENT_LENGTH) {
+    return 'Комментарий может содержать не больше ' + MAX_COMMENT_LENGTH + ' симв.';
+  }
+  return '';
+};
+
+uploadTextDescription.addEventListener('textarea', function (evt) {
+  uploadTextDescription.setCustomValidity(validatedComment(evt.target.value));
+});
 
 var validatedHashTags = function (value) {
   var hashtagsList = value.trim().toLowerCase().split(/\s+/);
@@ -287,7 +333,7 @@ buttonUploadCancel.addEventListener('click', function () {
 var onUploadFormEscPress = function (evt) {
   evt.preventDefault();
   if (evt.key === ESCAPE) {
-    if (hashtagsInput !== document.activeElement) {
+    if (hashtagsInput !== document.activeElement || uploadTextDescription !== document.activeElement) {
       closeUploadForm();
     }
   }
