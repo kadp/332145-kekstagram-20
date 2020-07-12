@@ -204,15 +204,15 @@ var hashtagRe = /^#[a-zа-я0-9]{1,20}$/;
 var uploadTextDescription = document.querySelector('.text__description');
 
 
-var validatedComment = function (value) {
-  if (value.length > MAX_COMMENT_LENGTH) {
-    return 'Комментарий может содержать не больше ' + MAX_COMMENT_LENGTH + ' симв.';
+var validatedComment = function () {
+  if (uploadTextDescription.value.length > MAX_COMMENT_LENGTH) {
+    return uploadTextDescription.setCustomValidity('Комментарий может содержать не больше ' + MAX_COMMENT_LENGTH + ' симв.');
   }
   return '';
 };
 
-uploadTextDescription.addEventListener('textarea', function (evt) {
-  uploadTextDescription.setCustomValidity(validatedComment(evt.target.value));
+uploadTextDescription.addEventListener('input', function () {
+  validatedComment();
 });
 
 var validatedHashTags = function (value) {
@@ -331,9 +331,9 @@ buttonUploadCancel.addEventListener('click', function () {
 });
 
 var onUploadFormEscPress = function (evt) {
-  evt.preventDefault();
   if (evt.key === ESCAPE) {
     if (hashtagsInput !== document.activeElement || uploadTextDescription !== document.activeElement) {
+      evt.preventDefault();
       closeUploadForm();
     }
   }
