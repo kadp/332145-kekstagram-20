@@ -12,6 +12,7 @@
   var BRIGHTNESS_VALUE = 3;
   var ESCAPE = 'Escape';
   var MAX_COMMENT_LENGTH = 140;
+  var DEFAULT_SIZE = 100;
 
   var body = document.querySelector('body');
   var uploadForm = document.querySelector('#upload-file');
@@ -177,6 +178,7 @@
     formEditPicture.classList.remove('hidden');
     fieldsetDeepEffect.classList.add('hidden');
     body.classList.add('modal-open');
+    setSizeValue(DEFAULT_SIZE);
     document.addEventListener('keydown', onUploadFormEscPress);
   };
 })();

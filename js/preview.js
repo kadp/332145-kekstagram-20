@@ -14,7 +14,6 @@
   var socialCommentsList = document.querySelector('.social__comments');
   var socialComment = document.querySelector('.social__comment');
   var bigPictureClose = document.querySelector('#picture-cancel');
-  var listPictures = document.querySelectorAll('.picture');
 
   var toggleHiden = function (elem) {
     elem.classList.toggle('hidden');
@@ -53,19 +52,6 @@
     showBigPicture(i);
   };
 
-
-
-  var setClicklistPictures = function () {
-    for (var i = 0; i < listPictures.length; i++) {
-      (function (j) {
-        listPictures[j].onclick = function () {
-          window.preview.setBigPictureData(j);
-
-        };
-      })(i);
-    }
-  };
-
   var showBigPicture = function (i) {
     toggleHiden(bigPicture);
     toggleModal(body);
@@ -88,14 +74,12 @@
   var onShowBigPictureEscPress = function (evt) {
     evt.preventDefault();
     if (evt.key === ESCAPE) {
+      evt.preventDefault();
       closeBigPicture();
     }
   };
 
-  setClicklistPictures();
-
   window.preview = {
-    any: 'lol',
     setBigPictureData: setBigPictureData
   };
 
