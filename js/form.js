@@ -195,7 +195,7 @@
       if (newX >= 0 && newX <= effectLevelDepth.offsetWidth) {
         sliderDeepEffect.style.left = newX + 'px';
         effectLevelLine.style.width = newX + 'px';
-        effectLevel.value = Math.round(newX / 4.55);
+        effectLevel.value = Math.round(newX / (effectLevelDepth.offsetWidth / 100));
         for (var i = 0; i < effectsListType.length; i++) {
           if (effectsListType[i].checked) {
             setFilterStyle(effectsListType[i].value, effectLevel.value);
