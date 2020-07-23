@@ -51,22 +51,32 @@
   var getPictureInfo = function (i) {
     return {
       url: 'photos/' + i + '.jpg',
-      description: 'Test, later will be delete',
+      description: '',
       likes: getRandomNumber(MIN_LIKES, MAX_LIKES),
       comments: getComments()
     };
   };
 
-  var getPicturesList = function () {
-    for (var i = 1; i <= PICTURES_LIST_RANGE; i++) {
-      picturesList.push(getPictureInfo(i));
+  var getPicturesList = function (loadData) {
+    for (var i = 0; i < loadData.length; i++) {
+      picturesList.push(loadData[i]);
     }
   };
 
-  getPicturesList();
+
+  var onError = function (message) {
+    console.error(message);
+  };
+
+  var URL = 'https://javascript.pages.academy/kekstagram/data';
+  window.load(URL, window.render.picture, onError);
 
   window.data = {
-    picturesList: picturesList,
+    picturesList: picturesList
   };
+
+  console.log('picturesList  after start', picturesList);
+
+
 
 })();

@@ -55,7 +55,7 @@
   var showBigPicture = function (i) {
     toggleHiden(bigPicture);
     toggleModal(body);
-    socialСommentСount.classList.add('hidden'); /* если использовать toggle по аналогии с bigPicture, то в четных картинках он переключается сам и отрисовывает скрытые поля*/
+    socialСommentСount.classList.add('hidden');
     commentsLoader.classList.add('hidden');
     renderComments(i);
     document.addEventListener('keydown', onShowBigPictureEscPress);
