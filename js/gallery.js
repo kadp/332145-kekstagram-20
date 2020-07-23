@@ -6,9 +6,9 @@
     var listPictures = document.querySelectorAll('.picture');
     for (var i = 0; i < listPictures.length; i++) {
       (function (j) {
-        listPictures[j].onclick = function () {
+        listPictures[j].addEventListener('click', function () {
           window.preview.setBigPictureData(j);
-        };
+        });
       })(i);
     }
   };

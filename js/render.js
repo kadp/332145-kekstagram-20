@@ -15,12 +15,12 @@
   };
 
 
-  var renderPicturesList = function (inData) {
-    for (var z = 0; z < inData.length; z++) {
-      fragment.appendChild(getPictureClone(inData[z]));
+  var renderPicturesList = function (loadData) {
+    for (var z = 0; z < loadData.length; z++) {
+      fragment.appendChild(getPictureClone(loadData[z]));
     }
     pictureContainer.appendChild(fragment);
-    window.gallery.setClicklistPictures();
+    window.gallery.setClicklistPictures(loadData);
   };
 
 
