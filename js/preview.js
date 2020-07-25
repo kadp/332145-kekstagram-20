@@ -79,7 +79,7 @@
   };
 
   window.preview = {
-    setBigPictureData: setBigPictureData
+    setBigPictureData: setBigPictureData,
   };
 
 })();

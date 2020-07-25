@@ -33,6 +33,52 @@
   var hashtagRe = /^#[a-zа-я0-9]{1,20}$/;
   var uploadTextDescription = document.querySelector('.text__description');
 
+  var inputUpload = document.querySelector('#upload-file');
+  var imgUpload = document.querySelector('.imgUpload');
+  var form = document.querySelector('#upload-select-image');
+  var successTemplate = document.querySelector('#success').content.querySelector('.success');
+  // var errorTemplate = document.querySelector('#error').content.querySelector('.error');
+  var main = document.querySelector('main');
+
+  form.addEventListener('submit', function (evt) {
+    window.upload(new FormData(form), function () {
+      closeUploadForm();
+      sendMessageHandler();
+    });
+    evt.preventDefault();
+  });
+
+  var sendMessageHandler = function () {
+    main.appendChild(successTemplate);
+    document.addEventListener('keydown', onSendMessageEscPress);
+    onSendMessageClick();
+  };
+
+  var onSendMessageEscPress = function (evt) {
+    if (evt.key === ESCAPE) {
+      var success = document.querySelector('.success');
+      main.removeChild(success);
+      document.removeEventListener('keydown', onSendMessageEscPress);
+    }
+  };
+  // обработчик ниже, не удаляется, копится.
+  var onSendMessageClick = function () {
+    var success = document.querySelector('.success');
+    success.addEventListener('click', function () {
+      main.removeChild(success);
+      document.removeEventListener('keydown', onSendMessageEscPress);
+    });
+  };
+
+  var setUploadPicture = function () {
+    var uploadFile = inputUpload.files[0];
+    if (uploadFile) {
+      imgUpload.src = URL.createObjectURL(uploadFile);
+      localStorage.setItem('uploadImg', imgUpload.src);
+    }
+    imgUpload.src = localStorage.getItem('uploadImg');
+  };
+
   var validatedComment = function () {
     if (uploadTextDescription.value.length > MAX_COMMENT_LENGTH) {
       return uploadTextDescription.setCustomValidity('Комментарий может содержать не больше ' + MAX_COMMENT_LENGTH + ' симв.');
@@ -171,6 +217,7 @@
     formEditPicture.classList.add('hidden');
     body.classList.remove('modal-open');
     uploadForm.value = '';
+    form.reset();
     document.removeEventListener('keydown', onUploadFormEscPress);
   };
 
@@ -179,6 +226,7 @@
     fieldsetDeepEffect.classList.add('hidden');
     body.classList.add('modal-open');
     setSizeValue(DEFAULT_SIZE);
+    setUploadPicture();
     document.addEventListener('keydown', onUploadFormEscPress);
   };
 
