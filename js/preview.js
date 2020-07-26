@@ -13,6 +13,10 @@
   var socialCommentsList = document.querySelector('.social__comments');
   var socialComment = document.querySelector('.social__comment');
   var bigPictureClose = document.querySelector('#picture-cancel');
+
+  var showComments = 5;
+  var currentPicture = null;
+
   var toggleHiden = function (elem) {
     elem.classList.toggle('hidden');
   };
@@ -35,11 +39,8 @@
     }
   };
 
-  var showComments = 5;
-  var currentPicture = null;
   var setNewComments = function () {
     showComments += 5;
-    console.log(showComments);
     renderComments(currentPicture);
     return;
   };
