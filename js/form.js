@@ -43,12 +43,12 @@
   form.addEventListener('submit', function (evt) {
     window.upload(new FormData(form), function () {
       closeUploadForm();
-      sendMessageHandler();
+      setSendMessage();
     });
     evt.preventDefault();
   });
 
-  var sendMessageHandler = function () {
+  var setSendMessage = function () {
     main.appendChild(successTemplate);
     document.addEventListener('keydown', onSendMessageEscPress);
     onSendMessageClick();
@@ -56,18 +56,22 @@
 
   var onSendMessageEscPress = function (evt) {
     if (evt.key === ESCAPE) {
-      var success = document.querySelector('.success');
-      main.removeChild(success);
+      var successMessage = document.querySelector('.success');
+      main.removeChild(successMessage);
       document.removeEventListener('keydown', onSendMessageEscPress);
     }
   };
   // обработчик ниже, не удаляется, копится.
   var onSendMessageClick = function () {
-    var success = document.querySelector('.success');
-    success.addEventListener('click', function () {
-      main.removeChild(success);
+    var successMessage = document.querySelector('.success');
+    successMessage.addEventListener('click', function () {
+      main.removeChild(successMessage);
       document.removeEventListener('keydown', onSendMessageEscPress);
     });
+  };
+
+  var changeClick = function () {
+
   };
 
   var setUploadPicture = function () {
