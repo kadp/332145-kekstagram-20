@@ -21,6 +21,7 @@
     nextPictures.sort(function () {
       return Math.random() - 0.5;
     });
+    nextPictures = nextPictures.slice(0, 10);
     clearAllStateButton();
     filterRandom.classList.add('img-filters__button--active');
     window.render.picture(nextPictures);
