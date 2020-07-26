@@ -14,8 +14,15 @@
     return clonedPicture;
   };
 
+  var removeOldPictures = function () {
+    var allPictures = pictureContainer.querySelectorAll('.picture');
+    allPictures.forEach(function (picture) {
+      pictureContainer.removeChild(picture);
+    });
+  };
 
   var renderPicturesList = function (loadData) {
+    removeOldPictures();
     for (var z = 0; z < loadData.length; z++) {
       fragment.appendChild(getPictureClone(loadData[z]));
     }

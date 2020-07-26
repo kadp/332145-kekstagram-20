@@ -8,4 +8,5 @@
   };
 
   window.load(loadDataHandler);
+
 })();

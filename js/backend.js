@@ -31,14 +31,23 @@
     xhr.send();
   };
 
-  window.upload = function (data, onSuccess) {
+  window.upload = function (data, onSuccess, onError) {
     var xhr = new XMLHttpRequest();
     xhr.responseType = 'json';
 
     xhr.addEventListener('load', function () {
-      onSuccess(xhr.response);
+      if (xhr.status === 200) {
+        onSuccess(xhr.response);
+      } else {
+        onError('Cтатус ответа: ' + xhr.status + ' ' + xhr.statusText);
+      }
     });
 
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState === 4 && xhr.status === 0) {
+        onError('не работает');
+      }
+    };
     xhr.open('POST', URL_UPLOAD);
     xhr.send(data);
   };

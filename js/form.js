@@ -34,24 +34,26 @@
   var uploadTextDescription = document.querySelector('.text__description');
 
   var inputUpload = document.querySelector('#upload-file');
-  var imgUpload = document.querySelector('.imgUpload');
+  var imgUpload = document.querySelector('.img-upload__preview img');
   var form = document.querySelector('#upload-select-image');
   var successTemplate = document.querySelector('#success').content.querySelector('.success');
-  // var errorTemplate = document.querySelector('#error').content.querySelector('.error');
+  var errorTemplate = document.querySelector('#error').content.querySelector('.error');
   var main = document.querySelector('main');
 
-  form.addEventListener('submit', function (evt) {
-    window.upload(new FormData(form), function () {
-      closeUploadForm();
-      setSendMessage();
-    });
-    evt.preventDefault();
-  });
+  var onSuccesModalClick = function (evt) {
+    if (
+      !evt.target.classList.contains('success__inner') &&
+      !evt.target.classList.contains('success__title')
+    ) {
+      closeSuccesModalClick();
+    }
+  };
 
-  var setSendMessage = function () {
-    main.appendChild(successTemplate);
-    document.addEventListener('keydown', onSendMessageEscPress);
-    onSendMessageClick();
+  var closeSuccesModalClick = function () {
+    var successMessage = document.querySelector('.success');
+    main.removeChild(successMessage);
+    document.removeEventListener('keydown', onSendMessageEscPress);
+    document.removeEventListener('click', onSuccesModalClick);
   };
 
   var onSendMessageEscPress = function (evt) {
@@ -59,19 +61,30 @@
       var successMessage = document.querySelector('.success');
       main.removeChild(successMessage);
       document.removeEventListener('keydown', onSendMessageEscPress);
+      document.removeEventListener('click', onSuccesModalClick);
     }
   };
-  // обработчик ниже, не удаляется, копится.
-  var onSendMessageClick = function () {
-    var successMessage = document.querySelector('.success');
-    successMessage.addEventListener('click', function () {
-      main.removeChild(successMessage);
-      document.removeEventListener('keydown', onSendMessageEscPress);
-    });
+
+  var setSendMessage = function () {
+    main.appendChild(successTemplate);
+    document.addEventListener('keydown', onSendMessageEscPress);
+    document.addEventListener('click', onSuccesModalClick);
   };
 
-  var changeClick = function () {
+  form.addEventListener('submit', function (evt) {
+    window.upload(new FormData(form), onSuccess, onError);
+    evt.preventDefault();
+  });
 
+  var onSuccess = function () {
+    closeUploadForm();
+    form.reset();
+    setSendMessage();
+  };
+
+  var onError = function () {
+    closeUploadForm();
+    main.appendChild(errorTemplate);
   };
 
   var setUploadPicture = function () {
@@ -221,7 +234,6 @@
     formEditPicture.classList.add('hidden');
     body.classList.remove('modal-open');
     uploadForm.value = '';
-    form.reset();
     document.removeEventListener('keydown', onUploadFormEscPress);
   };
 
