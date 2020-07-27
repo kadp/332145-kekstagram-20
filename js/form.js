@@ -32,7 +32,6 @@
   var hashtagsInput = document.querySelector('.text__hashtags');
   var hashtagRe = /^#[a-zа-я0-9]{1,20}$/;
   var uploadTextDescription = document.querySelector('.text__description');
-
   var inputUpload = document.querySelector('#upload-file');
   var imgUpload = document.querySelector('.img-upload__preview img');
   var form = document.querySelector('#upload-select-image');
