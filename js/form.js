@@ -14,6 +14,7 @@
   var MAX_COMMENT_LENGTH = 140;
   var DEFAULT_SIZE = 100;
 
+  var main = document.querySelector('main');
   var body = document.querySelector('body');
   var uploadForm = document.querySelector('#upload-file');
   var formEditPicture = document.querySelector('.img-upload__overlay');
@@ -37,7 +38,6 @@
   var form = document.querySelector('#upload-select-image');
   var successTemplate = document.querySelector('#success').content.querySelector('.success');
   var errorTemplate = document.querySelector('#error').content.querySelector('.error');
-  var main = document.querySelector('main');
 
   var onSuccesModalClick = function (evt) {
     if (
@@ -64,7 +64,7 @@
     }
   };
 
-  var setSendMessage = function () {
+  var showSendMessage = function () {
     main.appendChild(successTemplate);
     document.addEventListener('keydown', onSendMessageEscPress);
     document.addEventListener('click', onSuccesModalClick);
@@ -77,14 +77,48 @@
 
   var onSuccess = function () {
     closeUploadForm();
-    form.reset();
-    setSendMessage();
+    showSendMessage();
+  };
+
+  var onErrorModalClick = function (evt) {
+    if (
+      !evt.target.classList.contains('error__inner') &&
+      !evt.target.classList.contains('error__title')
+    ) {
+      closeErrorModalClick();
+    }
+    if (evt.target.classList.contains('error__button')) {
+      openUploadForm();
+    }
+  };
+
+  var closeErrorModalClick = function () {
+    var errorMessage = document.querySelector('.error');
+    main.removeChild(errorMessage);
+    document.removeEventListener('keydown', onSendMessageEscPress);
+    document.removeEventListener('click', onErrorModalClick);
+  };
+
+  var onErrorMessageEscPress = function (evt) {
+    if (evt.key === ESCAPE) {
+      var errorMessage = document.querySelector('.error');
+      main.removeChild(errorMessage);
+      document.removeEventListener('keydown', onErrorMessageEscPress);
+      document.removeEventListener('click', onErrorModalClick);
+    }
+  };
+
+  var showErrorMessage = function () {
+    main.appendChild(errorTemplate);
+    document.addEventListener('keydown', onErrorMessageEscPress);
+    document.addEventListener('click', onErrorModalClick);
   };
 
   var onError = function () {
     closeUploadForm();
-    main.appendChild(errorTemplate);
+    showErrorMessage();
   };
+
 
   var setUploadPicture = function () {
     var uploadFile = inputUpload.files[0];

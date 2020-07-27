@@ -6,11 +6,11 @@
   var pictureContainer = document.querySelector('.pictures');
   var fragment = document.createDocumentFragment();
 
-  var getPictureClone = function (inD) {
+  var getPictureClone = function (picture) {
     var clonedPicture = pictureTemplate.cloneNode(true);
-    clonedPicture.querySelector('img').src = inD.url;
-    clonedPicture.querySelector('.picture__likes').textContent = inD.likes;
-    clonedPicture.querySelector('.picture__comments').textContent = inD.comments.length;
+    clonedPicture.querySelector('img').src = picture.url;
+    clonedPicture.querySelector('.picture__likes').textContent = picture.likes;
+    clonedPicture.querySelector('.picture__comments').textContent = picture.comments.length;
     return clonedPicture;
   };
 
@@ -21,13 +21,13 @@
     });
   };
 
-  var renderPicturesList = function (loadData) {
+  var renderPicturesList = function (loadPictures) {
     removeOldPictures();
-    for (var z = 0; z < loadData.length; z++) {
-      fragment.appendChild(getPictureClone(loadData[z]));
+    for (var i = 0; i < loadPictures.length; i++) {
+      fragment.appendChild(getPictureClone(loadPictures[i]));
     }
     pictureContainer.appendChild(fragment);
-    window.gallery.setClicklistPictures(loadData);
+    window.gallery.setClicklistPictures(loadPictures);
   };
 
 

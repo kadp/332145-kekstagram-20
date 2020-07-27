@@ -4,13 +4,14 @@
 
   var URL_LOAD = 'https://javascript.pages.academy/kekstagram/data';
   var URL_UPLOAD = 'https://javascript.pages.academy/kekstagram';
+  var LOAD_OK = 200;
 
   window.load = function (onSuccess, onError) {
     var xhr = new XMLHttpRequest();
     xhr.responseType = 'json';
 
     xhr.addEventListener('load', function () {
-      if (xhr.status === 200) {
+      if (xhr.status === LOAD_OK) {
         onSuccess(xhr.response);
       } else {
         onError('Cтатус ответа: ' + xhr.status + ' ' + xhr.statusText);
@@ -36,18 +37,17 @@
     xhr.responseType = 'json';
 
     xhr.addEventListener('load', function () {
-      if (xhr.status === 200) {
+      if (xhr.status === LOAD_OK) {
         onSuccess(xhr.response);
       } else {
         onError('Cтатус ответа: ' + xhr.status + ' ' + xhr.statusText);
       }
     });
 
-    xhr.onreadystatechange = function () {
-      if (xhr.readyState === 4 && xhr.status === 0) {
-        onError('не работает');
-      }
-    };
+    xhr.addEventListener('error', function () {
+      onError('Произошла ошибка');
+    });
+
     xhr.open('POST', URL_UPLOAD);
     xhr.send(data);
   };

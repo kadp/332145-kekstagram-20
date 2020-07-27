@@ -46,8 +46,8 @@
     window.render.picture(nextPictures);
   };
 
-  filterDefault.addEventListener('click', renderDefault);
-  filterRandom.addEventListener('click', renderRandom);
-  filterDiscussed.addEventListener('click', renderDiscussed);
+  filterDefault.addEventListener('click', window.debounce(renderDefault));
+  filterRandom.addEventListener('click', window.debounce(renderRandom));
+  filterDiscussed.addEventListener('click', window.debounce(renderDiscussed));
 
 })();

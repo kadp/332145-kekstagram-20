@@ -3,6 +3,7 @@
 (function () {
 
   var ESCAPE = 'Escape';
+  var DEFAULT_COMMENTS_RENDER = 5;
   var body = document.querySelector('body');
   var bigPicture = document.querySelector('.big-picture');
   var likesCount = document.querySelector('.likes-count');
@@ -40,7 +41,7 @@
   };
 
   var setNewComments = function () {
-    showComments += 5;
+    showComments += DEFAULT_COMMENTS_RENDER;
     renderComments(currentPicture);
     return;
   };
