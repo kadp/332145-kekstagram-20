@@ -39,6 +39,7 @@
   var successTemplate = document.querySelector('#success').content.querySelector('.success');
   var errorTemplate = document.querySelector('#error').content.querySelector('.error');
 
+
   var onSuccesModalClick = function (evt) {
     if (
       !evt.target.classList.contains('success__inner') &&
@@ -64,7 +65,7 @@
     }
   };
 
-  var showSendMessage = function () {
+  var sendMessagePopup = function () {
     main.appendChild(successTemplate);
     document.addEventListener('keydown', onSendMessageEscPress);
     document.addEventListener('click', onSuccesModalClick);
@@ -76,8 +77,9 @@
   });
 
   var onSuccess = function () {
+    form.reset();
     closeUploadForm();
-    showSendMessage();
+    sendMessagePopup();
   };
 
   var onErrorModalClick = function (evt) {
@@ -86,9 +88,6 @@
       !evt.target.classList.contains('error__title')
     ) {
       closeErrorModalClick();
-    }
-    if (evt.target.classList.contains('error__button')) {
-      openUploadForm();
     }
   };
 
@@ -118,7 +117,6 @@
     closeUploadForm();
     showErrorMessage();
   };
-
 
   var setUploadPicture = function () {
     var uploadFile = inputUpload.files[0];
@@ -276,6 +274,7 @@
     body.classList.add('modal-open');
     setSizeValue(DEFAULT_SIZE);
     setUploadPicture();
+    setFilterStyle('none');
     document.addEventListener('keydown', onUploadFormEscPress);
   };
 
