@@ -28,9 +28,9 @@
 
   var renderComment = function (j, i) {
     var newComment = socialComment.cloneNode(true);
-    newComment.querySelector('.social__picture').src = window.picturesArray[i].comments[j].avatar;
-    newComment.querySelector('.social__picture').alt = window.picturesArray[i].comments[j].name;
-    newComment.querySelector('.social__text').textContent = window.picturesArray[i].comments[j].message;
+    newComment.querySelector('.social__picture').src = window.pictures[i].comments[j].avatar;
+    newComment.querySelector('.social__picture').alt = window.pictures[i].comments[j].name;
+    newComment.querySelector('.social__text').textContent = window.pictures[i].comments[j].message;
     return newComment;
   };
 
@@ -40,20 +40,20 @@
     }
   };
 
-  var setNewComments = function () {
+  var onCommentsLoaderClick = function () {
     showComments += DEFAULT_COMMENTS_RENDER;
     renderComments(currentPicture);
     return;
   };
-  commentsLoader.addEventListener('click', setNewComments);
+  commentsLoader.addEventListener('click', onCommentsLoaderClick);
 
   var renderComments = function (i) {
     removeOldComments();
     currentPicture = i;
-    for (var j = 0; j < Math.min(showComments, window.picturesArray[i].comments.length); j++) {
+    for (var j = 0; j < Math.min(showComments, window.pictures[i].comments.length); j++) {
       socialCommentsList.appendChild(renderComment(j, i));
     }
-    if (showComments >= window.picturesArray[i].comments.length) {
+    if (showComments >= window.pictures[i].comments.length) {
       commentsLoader.classList.add('hidden');
     } else {
       commentsLoader.classList.remove('hidden');
@@ -61,10 +61,10 @@
   };
 
   var setBigPictureData = function (i) {
-    bigPicture.querySelector('img').src = window.picturesArray[i].url;
-    likesCount.textContent = window.picturesArray[i].likes;
-    commentsCount.textContent = window.picturesArray[i].comments.length;
-    socialCaption.textContent = window.picturesArray[i].description;
+    bigPicture.querySelector('img').src = window.pictures[i].url;
+    likesCount.textContent = window.pictures[i].likes;
+    commentsCount.textContent = window.pictures[i].comments.length;
+    socialCaption.textContent = window.pictures[i].description;
     showBigPicture(i);
   };
 

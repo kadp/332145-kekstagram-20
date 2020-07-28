@@ -9,7 +9,7 @@
   var STEP_SIZE_PICTURE = 25;
   var DEFAULT_SLIDER_VALUE = 100;
   var BLUR_VALUE = 3;
-  var BRIGHTNESS_VALUE = 3;
+  var BRIGHTNESS_MAX = 3;
   var ESCAPE = 'Escape';
   var MAX_COMMENT_LENGTH = 140;
   var DEFAULT_SIZE = 100;
@@ -28,8 +28,7 @@
   var scaleControl = document.querySelector('.scale__control--value');
   var fieldsetDeepEffect = document.querySelector('.img-upload__effect-level');
   var imgUploadPreview = document.querySelector('.img-upload__preview');
-  var effectsList = document.querySelector('.effects__list');
-  var effectsListType = document.querySelectorAll('input[type="radio"]');
+  var effects = document.querySelectorAll('input[type="radio"]');
   var hashtagsInput = document.querySelector('.text__hashtags');
   var hashtagRe = /^#[a-zа-я0-9]{1,20}$/;
   var uploadTextDescription = document.querySelector('.text__description');
@@ -39,6 +38,7 @@
   var successTemplate = document.querySelector('#success').content.querySelector('.success');
   var errorTemplate = document.querySelector('#error').content.querySelector('.error');
 
+  var currentFilter = '';
 
   var onSuccesModalClick = function (evt) {
     if (
@@ -58,10 +58,7 @@
 
   var onSendMessageEscPress = function (evt) {
     if (evt.key === ESCAPE) {
-      var successMessage = document.querySelector('.success');
-      main.removeChild(successMessage);
-      document.removeEventListener('keydown', onSendMessageEscPress);
-      document.removeEventListener('click', onSuccesModalClick);
+      closeSuccesModalClick();
     }
   };
 
@@ -72,7 +69,7 @@
   };
 
   form.addEventListener('submit', function (evt) {
-    window.upload(new FormData(form), onSuccess, onError);
+    window.backend.onRequestUpload(new FormData(form), onSuccess, onError);
     evt.preventDefault();
   });
 
@@ -100,10 +97,7 @@
 
   var onErrorMessageEscPress = function (evt) {
     if (evt.key === ESCAPE) {
-      var errorMessage = document.querySelector('.error');
-      main.removeChild(errorMessage);
-      document.removeEventListener('keydown', onErrorMessageEscPress);
-      document.removeEventListener('click', onErrorModalClick);
+      closeErrorModalClick();
     }
   };
 
@@ -138,26 +132,42 @@
     validatedComment();
   });
 
+  var inputValidateError = function (validateError) {
+    hashtagsInput.style.border = validateError ?
+      '2px solid red' :
+      '';
+  };
+
   var validatedHashTags = function (value) {
     var hashtagsList = value.trim().toLowerCase().split(/\s+/);
     if (hashtagsList.length <= MAX_HASHTAGE_AMOUNT) {
       for (var i = 0; i < hashtagsList.length; i++) {
         if (hashtagsList[i][0] !== '#') {
+          inputValidateError(value);
           return 'ХешТег должен начинаться с решётки - "#"';
         }
         if (!hashtagsList[i].length === 1) {
+          inputValidateError(value);
           return 'ХешТег не должен содержать всебе только решётку - "#"';
         }
         if (hashtagsList[i].length > MAX_HASHTAGE_LENGTH) {
+          inputValidateError(value);
           return 'Длина ХешТега не может быть больше ' + MAX_HASHTAGE_LENGTH + ' символов! Удалите лишние ' + (hashtagsList[i].length - MAX_HASHTAGE_LENGTH) + ' симв.';
         }
         if (!hashtagRe.test(hashtagsList[i])) {
+          inputValidateError(value);
           return 'Используются недопустимые символы, строка после решётки "#" должна состоять из букв и чисел';
+        }
+        var nextIndex = i + 1;
+        if (hashtagsList.indexOf(hashtagsList[i], nextIndex) > 0) {
+          inputValidateError(value);
+          return 'Нельзя использовать один и тот же ХешТег дважды';
         }
       }
     } else {
       return 'Можно использовать не больше ' + MAX_HASHTAGE_AMOUNT + ' #!';
     }
+    inputValidateError();
     return '';
   };
 
@@ -165,16 +175,18 @@
     hashtagsInput.setCustomValidity(validatedHashTags(evt.target.value));
   });
 
-  effectsList.addEventListener('click', function () {
+  var onEffectChange = function (evt) {
     var valueEffect = effectLevel.value;
-    for (var i = 0; i < effectsListType.length; i++) {
-      if (effectsListType[i].checked) {
-        setVisibleEffectLine(effectsListType[i].value);
-        setSliderDefaultPosition();
-        setFilterStyle(effectsListType[i].value, valueEffect);
-      }
-    }
-  });
+    var currentEffect = evt.target.value;
+    setVisibleEffectLine(currentEffect);
+    setSliderDefaultPosition();
+    setFilterStyle(currentEffect, valueEffect);
+    currentFilter = currentEffect;
+  };
+
+  for (var i = 0; i < effects.length; i++) {
+    effects[i].addEventListener('change', onEffectChange);
+  }
 
   var setVisibleEffectLine = function (filterType) {
     if (filterType === 'none') {
@@ -203,7 +215,9 @@
         imgUploadPreview.style.filter = 'blur(' + (valueEffect / 100) * BLUR_VALUE + 'px)';
         break;
       case 'heat':
-        imgUploadPreview.style.filter = 'brightness(' + (valueEffect / 100) * BRIGHTNESS_VALUE + ')';
+        var value = (valueEffect / 100) * BRIGHTNESS_MAX;
+        var brightness = value > 1 ? value : 1;
+        imgUploadPreview.style.filter = 'brightness(' + brightness + ')';
         break;
 
       default:
@@ -230,11 +244,9 @@
   });
 
   var getResizePicture = function (sign) {
-    if (sign) {
-      scaleControl.value = parseInt(scaleControl.value, 10) + STEP_SIZE_PICTURE + '%';
-    } else {
-      scaleControl.value = parseInt(scaleControl.value, 10) - STEP_SIZE_PICTURE + '%';
-    }
+    scaleControl.value = sign ?
+      parseInt(scaleControl.value, 10) + STEP_SIZE_PICTURE + '%' :
+      parseInt(scaleControl.value, 10) - STEP_SIZE_PICTURE + '%';
     setSizeValue(scaleControl.value);
   };
 
@@ -254,7 +266,7 @@
 
   var onUploadFormEscPress = function (evt) {
     if (evt.key === ESCAPE) {
-      if (hashtagsInput !== document.activeElement || uploadTextDescription !== document.activeElement) {
+      if (hashtagsInput !== document.activeElement && uploadTextDescription !== document.activeElement) {
         evt.preventDefault();
         closeUploadForm();
       }
@@ -292,11 +304,7 @@
         sliderDeepEffect.style.left = newX + 'px';
         effectLevelLine.style.width = newX + 'px';
         effectLevel.value = Math.round(newX / (effectLevelDepth.offsetWidth / 100));
-        for (var i = 0; i < effectsListType.length; i++) {
-          if (effectsListType[i].checked) {
-            setFilterStyle(effectsListType[i].value, effectLevel.value);
-          }
-        }
+        setFilterStyle(currentFilter, effectLevel.value);
       }
     };
 

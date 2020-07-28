@@ -6,7 +6,7 @@
   var URL_UPLOAD = 'https://javascript.pages.academy/kekstagram';
   var LOAD_OK = 200;
 
-  window.load = function (onSuccess, onError) {
+  var onRequestLoad = function (onSuccess, onError) {
     var xhr = new XMLHttpRequest();
     xhr.responseType = 'json';
 
@@ -32,7 +32,7 @@
     xhr.send();
   };
 
-  window.upload = function (data, onSuccess, onError) {
+  var onRequestUpload = function (data, onSuccess, onError) {
     var xhr = new XMLHttpRequest();
     xhr.responseType = 'json';
 
@@ -50,6 +50,11 @@
 
     xhr.open('POST', URL_UPLOAD);
     xhr.send(data);
+  };
+
+  window.backend = {
+    onRequestLoad: onRequestLoad,
+    onRequestUpload: onRequestUpload
   };
 
 })();

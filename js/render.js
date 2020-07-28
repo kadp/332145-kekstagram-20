@@ -30,7 +30,6 @@
     window.gallery.setClicklistPictures(loadPictures);
   };
 
-
   window.render = {
     picture: renderPicturesList
   };

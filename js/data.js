@@ -2,11 +2,21 @@
 
 (function () {
 
-  var loadDataHandler = function (data) {
-    window.render.picture(data);
-    window.picturesArray = data;
+  var showFilterButtons = function () {
+    var imgFilters = document.querySelector('.img-filters');
+    imgFilters.classList.remove('img-filters--inactive');
   };
 
-  window.load(loadDataHandler);
+  var onLoadData = function (data) {
+    window.render.picture(data);
+    window.pictures = data;
+    showFilterButtons();
+  };
+
+  var onLoadDataError = function () {
+    return 'Произошла ошибка';
+  };
+
+  window.backend.onRequestLoad(onLoadData, onLoadDataError);
 
 })();
